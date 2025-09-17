@@ -1,0 +1,272 @@
+<!-- 500.html -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服務器錯誤 - 情感分析系統</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --error-color: #f56565;
+            --warning-color: #ed8936;
+            --dark-color: #2d3748;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--error-color) 0%, var(--warning-color) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-color);
+        }
+
+        .error-container {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 3rem;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .error-icon {
+            font-size: 6rem;
+            color: var(--error-color);
+            margin-bottom: 1rem;
+            animation: shake 0.5s infinite alternate;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(5px); }
+        }
+
+        .error-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--error-color);
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            font-size: 1.2rem;
+            color: #718096;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .error-details {
+            background: #fed7d7;
+            border: 1px solid var(--error-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: #742a2a;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: var(--dark-color);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .help-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .help-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .help-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .help-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .help-list i {
+            color: var(--primary-color);
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 2rem;
+            }
+            
+            .error-title {
+                font-size: 2.5rem;
+            }
+            
+            .error-icon {
+                font-size: 4rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h1 class="error-title">500</h1>
+        <p class="error-message">
+            服務器內部發生錯誤，我們正在努力修復問題。<br>
+            請稍後再試，或聯繫系統管理員。
+        </p>
+        
+        <div class="error-details">
+            <strong>可能的原因：</strong><br>
+            • 模型載入失敗<br>
+            • 數據庫連接問題<br>
+            • 系統資源不足<br>
+            • 配置文件錯誤
+        </div>
+        
+        <div class="button-group">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                返回首頁
+            </a>
+            <button onclick="location.reload()" class="btn btn-secondary">
+                <i class="fas fa-sync-alt"></i>
+                重新載入
+            </button>
+        </div>
+        
+        <div class="help-section">
+            <div class="help-title">
+                <i class="fas fa-question-circle"></i> 如果問題持續存在
+            </div>
+            <ul class="help-list">
+                <li>
+                    <i class="fas fa-check"></i>
+                    檢查所有模型文件是否正確載入（best_model.pkl, vectorizer.pkl）
+                </li>
+                <li>
+                    <i class="fas fa-check"></i>
+                    確認數據庫文件存在且可訪問（sentiment_analysis.db）
+                </li>
+                <li>
+                    <i class="fas fa-check"></i>
+                    重新執行模型訓練程序（python train_model.py）
+                </li>
+                <li>
+                    <i class="fas fa-check"></i>
+                    檢查系統日誌文件獲取詳細錯誤信息
+                </li>
+                <li>
+                    <i class="fas fa-check"></i>
+                    確認所有依賴庫正確安裝
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 錯誤報告功能（可選）
+        function reportError() {
+            const errorData = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                url: window.location.href,
+                referrer: document.referrer
+            };
+            
+            // 這裡可以發送錯誤報告到後端
+            console.log('錯誤報告：', errorData);
+            
+            // 或者顯示錯誤報告表單
+            alert('錯誤已記錄。如需技術支持，請聯繫系統管理員。');
+        }
+
+        // 健康檢查
+        function checkSystemHealth() {
+            fetch('/health')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'OK') {
+                        const details = document.querySelector('.error-details');
+                        if (details) {
+                            details.innerHTML += '<br><br><strong>系統狀態：</strong> 健康檢查通過，問題可能已解決。';
+                            details.style.background = '#c6f6d5';
+                            details.style.borderColor = '#48bb78';
+                            details.style.color = '#22543d';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.log('健康檢查失敗：', error);
+                });
+        }
+
+        // 頁面載入後檢查系統狀態
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(checkSystemHealth, 2000);
+        });
+    </script>
+</body>
+</html>
