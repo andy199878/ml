@@ -3,746 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>系統監控儀表板 - 情感分析系統</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>儀表板</title>
     <style>
-        :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --success-color: #48bb78;
-            --error-color: #f56565;
-            --warning-color: #ed8936;
-            --info-color: #4299e1;
-            --dark-color: #2d3748;
-            --light-bg: #f7fafc;
-            --white: #ffffff;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --border-radius: 12px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--light-bg);
-            color: var(--dark-color);
-            line-height: 1.6;
-        }
-
-        .navbar {
-            background: var(--white);
-            box-shadow: var(--shadow);
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .navbar .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
-
-        .navbar .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .navbar .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .navbar .nav-links a {
-            text-decoration: none;
-            color: var(--dark-color);
-            font-weight: 500;
-            transition: color 0.3s;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-        }
-
-        .navbar .nav-links a:hover,
-        .navbar .nav-links a.active {
-            color: var(--white);
-            background: var(--primary-color);
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .page-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--white);
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .page-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .page-header p {
-            opacity: 0.9;
-            font-size: 1.1rem;
-        }
-
-        .refresh-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--white);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .refresh-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            transition: transform 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .stat-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-
-        .stat-icon {
-            font-size: 1.5rem;
-            padding: 0.5rem;
-            border-radius: 50%;
-            color: var(--white);
-        }
-
-        .stat-icon.primary {
-            background: var(--primary-color);
-        }
-
-        .stat-icon.success {
-            background: var(--success-color);
-        }
-
-        .stat-icon.warning {
-            background: var(--warning-color);
-        }
-
-        .stat-icon.info {
-            background: var(--info-color);
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-description {
-            font-size: 0.9rem;
-            color: #718096;
-        }
-
-        .chart-container {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-        }
-
-        .chart-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--dark-color);
-        }
-
-        .chart-placeholder {
-            width: 100%;
-            height: 400px;
-            background: var(--light-bg);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #718096;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-        }
-
-        .model-performance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .model-card {
-            background: var(--light-bg);
-            padding: 1rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .model-name {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--dark-color);
-        }
-
-        .model-metrics {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-        }
-
-        .metric-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-        }
-
-        .metric-label {
-            color: #718096;
-        }
-
-        .metric-value {
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 0.5rem;
-        }
-
-        .status-online {
-            background: var(--success-color);
-        }
-
-        .status-warning {
-            background: var(--warning-color);
-        }
-
-        .status-offline {
-            background: var(--error-color);
-        }
-
-        .real-time-section {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .activity-log {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .log-item {
-            padding: 0.75rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .log-time {
-            font-size: 0.85rem;
-            color: #718096;
-            min-width: 80px;
-        }
-
-        .log-message {
-            flex: 1;
-        }
-
-        .log-type {
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .log-type.success {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .log-type.warning {
-            background: #feebc8;
-            color: #744210;
-        }
-
-        .log-type.error {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-
-        .system-health {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-
-        .health-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .health-item:last-child {
-            border-bottom: none;
-        }
-
-        .health-label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 500;
-        }
-
-        .health-status {
-            font-size: 0.9rem;
-            font-weight: 600;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-        }
-
-        .health-status.healthy {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .health-status.degraded {
-            background: #feebc8;
-            color: #744210;
-        }
-
-        .health-status.unhealthy {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 1rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .real-time-section {
-                grid-template-columns: 1fr;
-            }
-
-            .page-header h1 {
-                font-size: 2rem;
-            }
-
-            .navbar .container {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .navbar .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-        }
+        body { font-family: sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; background: #f6f8fa; }
+        nav { background: #ffffff; border: 1px solid #e5e7eb; padding: 0.5rem 0.75rem; border-radius: 8px; margin-bottom: 1rem; }
+        a { margin-right: 1rem; color: #2563eb; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+        th, td { border-bottom: 1px solid #e5e7eb; padding: 0.5rem 0.75rem; text-align: left; }
+        th { background: #f1f5f9; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-top: 1rem; }
+        .card { border: 1px solid #e5e7eb; background: #ffffff; padding: 0.75rem; border-radius: 8px; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
+        .muted { color: #555; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr 1fr; } }
     </style>
 </head>
 <body>
-    <!-- 導航欄 -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="logo">
-                <i class="fas fa-brain"></i> 智慧情感分析
-            </div>
-            <ul class="nav-links">
-                <li><a href="/"><i class="fas fa-home"></i> 首頁</a></li>
-                <li><a href="/ab_test"><i class="fas fa-flask"></i> A/B測試</a></li>
-                <li><a href="/dashboard" class="active"><i class="fas fa-chart-line"></i> 儀表板</a></li>
-                <li><a href="/model_comparison"><i class="fas fa-balance-scale"></i> 模型比較</a></li>
-            </ul>
-        </div>
+    <nav>
+        <a href="/">首頁</a>
+        <a href="/ab_test">A/B測試</a>
+        <a href="/dashboard">儀表板</a>
+        <a href="/model_comparison">模型比較</a>
     </nav>
 
-    <div class="container">
-        <!-- 頁面標題 -->
-        <div class="page-header">
-            <button class="refresh-btn" onclick="refreshDashboard()">
-                <i class="fas fa-sync-alt"></i> 刷新
-            </button>
-            <h1><i class="fas fa-tachometer-alt"></i> 系統監控儀表板</h1>
-            <p>實時監控系統性能、模型狀態和使用統計</p>
+    <h1>儀表板</h1>
+
+    {% if error %}
+        <div class="card">錯誤：{{ error }}</div>
+    {% endif %}
+
+    <h3>彙總</h3>
+    <div class="grid">
+        <div class="card">
+            <div>總預測</div>
+            <strong>{% if aggregates %}{{ aggregates.total_predictions }}{% else %}0{% endif %}</strong>
         </div>
-
-        <!-- 系統概覽統計 -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">總預測次數</span>
-                    <span class="stat-icon primary">
-                        <i class="fas fa-chart-bar"></i>
-                    </span>
-                </div>
-                <div class="stat-value" id="totalPredictions">{{ stats.get('total_predictions', 0) }}</div>
-                <div class="stat-description">過去7天內的總預測次數</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">平均信心度</span>
-                    <span class="stat-icon success">
-                        <i class="fas fa-bullseye"></i>
-                    </span>
-                </div>
-                <div class="stat-value" id="avgConfidence">{{ "%.1f%%" | format((stats.get('avg_confidence', 0) * 100)) }}</div>
-                <div class="stat-description">模型預測的平均信心度</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">平均響應時間</span>
-                    <span class="stat-icon warning">
-                        <i class="fas fa-clock"></i>
-                    </span>
-                </div>
-                <div class="stat-value" id="avgLatency">{{ "%.1fms" | format((stats.get('avg_latency', 0) * 1000)) }}</div>
-                <div class="stat-description">系統平均響應時間</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-title">正面情感比例</span>
-                    <span class="stat-icon info">
-                        <i class="fas fa-smile"></i>
-                    </span>
-                </div>
-                <div class="stat-value" id="positiveRate">{{ "%.1f%%" | format((stats.get('positive_rate', 0) * 100)) }}</div>
-                <div class="stat-description">正面情感預測的比例</div>
-            </div>
+        <div class="card">
+            <div>平均信心度</div>
+            <strong>{% if aggregates %}{{ "%.1f%%" | format(aggregates.avg_confidence * 100) }}{% else %}0%{% endif %}</strong>
         </div>
-
-        <!-- 圖表區域 -->
-        <div class="chart-container">
-            <h3 class="chart-title">
-                <i class="fas fa-chart-line"></i> 預測趨勢分析
-            </h3>
-            <div class="chart-placeholder">
-                <img src="/static/trend_charts.png" alt="趨勢圖表" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<i class=\'fas fa-chart-line fa-3x\'></i><br>圖表生成中...'">
-            </div>
+        <div class="card">
+            <div>平均延遲</div>
+            <strong>{% if aggregates %}{{ "%.1f ms" | format(aggregates.avg_latency_ms) }}{% else %}0 ms{% endif %}</strong>
         </div>
-
-        <!-- 實時監控區域 -->
-        <div class="real-time-section">
-            <!-- 活動日志 -->
-            <div class="activity-log">
-                <h3 class="chart-title">
-                    <i class="fas fa-list"></i> 活動日志
-                </h3>
-                <div id="activityLog">
-                    <!-- 模擬日志條目 -->
-                    <div class="log-item">
-                        <span class="log-time">14:30</span>
-                        <span class="log-message">模型 best_model 完成預測</span>
-                        <span class="log-type success">成功</span>
-                    </div>
-                    <div class="log-item">
-                        <span class="log-time">14:28</span>
-                        <span class="log-message">用戶提交文本分析請求</span>
-                        <span class="log-type success">請求</span>
-                    </div>
-                    <div class="log-item">
-                        <span class="log-time">14:25</span>
-                        <span class="log-message">系統健康檢查完成</span>
-                        <span class="log-type success">健康</span>
-                    </div>
-                    <div class="log-item">
-                        <span class="log-time">14:20</span>
-                        <span class="log-message">模型性能統計更新</span>
-                        <span class="log-type success">統計</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 系統健康狀態 -->
-            <div class="system-health">
-                <h3 class="chart-title">
-                    <i class="fas fa-heartbeat"></i> 系統健康狀態
-                </h3>
-                <div id="systemHealth">
-                    <div class="health-item">
-                        <div class="health-label">
-                            <span class="status-indicator status-online"></span>
-                            模型服務
-                        </div>
-                        <span class="health-status healthy">正常</span>
-                    </div>
-                    <div class="health-item">
-                        <div class="health-label">
-                            <span class="status-indicator status-online"></span>
-                            數據庫連接
-                        </div>
-                        <span class="health-status healthy">正常</span>
-                    </div>
-                    <div class="health-item">
-                        <div class="health-label">
-                            <span class="status-indicator status-online"></span>
-                            向量化器
-                        </div>
-                        <span class="health-status healthy">正常</span>
-                    </div>
-                    <div class="health-item">
-                        <div class="health-label">
-                            <span class="status-indicator status-warning"></span>
-                            內存使用率
-                        </div>
-                        <span class="health-status degraded">75%</span>
-                    </div>
-                    <div class="health-item">
-                        <div class="health-label">
-                            <span class="status-indicator status-online"></span>
-                            API響應時間
-                        </div>
-                        <span class="health-status healthy">&lt; 100ms</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 模型性能詳情 -->
-        <div class="chart-container">
-            <h3 class="chart-title">
-                <i class="fas fa-cogs"></i> 模型性能監控
-            </h3>
-            <div class="chart-placeholder">
-                <img src="/static/dashboard_charts.png" alt="性能圖表" style="max-width: 100%; height: auto;" onerror="this.parentElement.innerHTML='<i class=\'fas fa-cogs fa-3x\'></i><br>性能圖表生成中...'">
-            </div>
-            
-            <div class="model-performance-grid">
-                {% if stats %}
-                    {% for model_name, model_stats in stats.items() %}
-                    <div class="model-card">
-                        <div class="model-name">
-                            <i class="fas fa-robot"></i> {{ model_name }}
-                        </div>
-                        <div class="model-metrics">
-                            <div class="metric-item">
-                                <span class="metric-label">預測次數:</span>
-                                <span class="metric-value">{{ model_stats.total_predictions }}</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-label">平均信心度:</span>
-                                <span class="metric-value">{{ "%.3f" | format(model_stats.avg_confidence) }}</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-label">平均延遲:</span>
-                                <span class="metric-value">{{ "%.1fms" | format(model_stats.avg_latency * 1000) }}</span>
-                            </div>
-                            <div class="metric-item">
-                                <span class="metric-label">正面率:</span>
-                                <span class="metric-value">{{ "%.1f%%" | format(model_stats.positive_rate * 100) }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="model-card">
-                        <div class="model-name">
-                            <i class="fas fa-info-circle"></i> 暫無數據
-                        </div>
-                        <div class="stat-description">
-                            尚未有足夠的預測數據來顯示統計信息
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
+        <div class="card">
+            <div>正面比例</div>
+            <strong>{% if aggregates %}{{ "%.1f%%" | format(aggregates.positive_rate * 100) }}{% else %}0%{% endif %}</strong>
         </div>
     </div>
 
-    <script>
-        // 刷新儀表板數據
-        function refreshDashboard() {
-            const refreshBtn = document.querySelector('.refresh-btn');
-            const originalContent = refreshBtn.innerHTML;
-            
-            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 刷新中...';
-            refreshBtn.disabled = true;
-            
-            // 模擬刷新延遲
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
-        }
-
-        // 檢查系統健康狀態
-        function checkSystemHealth() {
-            fetch('/health')
-                .then(response => response.json())
-                .then(data => {
-                    updateHealthStatus(data);
-                })
-                .catch(error => {
-                    console.error('健康檢查失敗:', error);
-                    updateHealthStatus({status: 'ERROR', components: {}});
-                });
-        }
-
-        // 更新健康狀態顯示
-        function updateHealthStatus(healthData) {
-            const healthContainer = document.getElementById('systemHealth');
-            if (!healthContainer) return;
-
-            const components = healthData.components || {};
-            const items = healthContainer.querySelectorAll('.health-item');
-            
-            items.forEach(item => {
-                const label = item.querySelector('.health-label').textContent.trim();
-                const indicator = item.querySelector('.status-indicator');
-                const status = item.querySelector('.health-status');
-                
-                if (label.includes('模型服務')) {
-                    updateHealthItem(indicator, status, components.model);
-                } else if (label.includes('數據庫')) {
-                    updateHealthItem(indicator, status, components.database);
-                } else if (label.includes('向量化器')) {
-                    updateHealthItem(indicator, status, components.vectorizer);
-                }
-            });
-        }
-
-        function updateHealthItem(indicator, status, componentStatus) {
-            if (componentStatus === 'OK') {
-                indicator.className = 'status-indicator status-online';
-                status.className = 'health-status healthy';
-                status.textContent = '正常';
-            } else if (componentStatus === 'WARNING') {
-                indicator.className = 'status-indicator status-warning';
-                status.className = 'health-status degraded';
-                status.textContent = '警告';
-            } else {
-                indicator.className = 'status-indicator status-offline';
-                status.className = 'health-status unhealthy';
-                status.textContent = '異常';
-            }
-        }
-
-        // 模擬實時日志更新
-        function addLogEntry(time, message, type) {
-            const logContainer = document.getElementById('activityLog');
-            const logEntry = document.createElement('div');
-            logEntry.className = 'log-item';
-            logEntry.innerHTML = `
-                <span class="log-time">${time}</span>
-                <span class="log-message">${message}</span>
-                <span class="log-type ${type}">${type.toUpperCase()}</span>
-            `;
-            
-            logContainer.insertBefore(logEntry, logContainer.firstChild);
-            
-            // 限制日志條目數量
-            if (logContainer.children.length > 20) {
-                logContainer.removeChild(logContainer.lastChild);
-            }
-        }
-
-        // 頁面初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            // 初始健康檢查
-            checkSystemHealth();
-            
-            // 定期更新
-            setInterval(() => {
-                checkSystemHealth();
-                
-                // 模擬添加日志條目
-                const now = new Date();
-                const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
-                               now.getMinutes().toString().padStart(2, '0');
-                
-                if (Math.random() < 0.3) { // 30%的概率添加日志
-                    const messages = [
-                        '用戶提交預測請求',
-                        '模型完成預測分析',
-                        '系統性能統計更新',
-                        '緩存清理完成'
-                    ];
-                    const types = ['success', 'success', 'success', 'success'];
-                    const randomIndex = Math.floor(Math.random() * messages.length);
-                    
-                    addLogEntry(timeStr, messages[randomIndex], types[randomIndex]);
-                }
-            }, 5000); // 每5秒更新一次
-        });
-
-        // 錯誤處理
-        window.addEventListener('error', function(e) {
-            const now = new Date();
-            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
-                           now.getMinutes().toString().padStart(2, '0');
-            addLogEntry(timeStr, '頁面發生錯誤: ' + e.message, 'error');
-        });
-    </script>
+    <h3>各模型統計</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>模型</th>
+                <th>預測次數</th>
+                <th>平均信心度</th>
+                <th>平均延遲 (ms)</th>
+                <th>正面率</th>
+                <th>負面率</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if stats %}
+                {% for name, s in stats.items() %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ s.total_predictions }}</td>
+                        <td>{{ "%.3f" | format(s.avg_confidence) }}</td>
+                        <td>{{ "%.1f" | format(s.avg_latency * 1000) }}</td>
+                        <td>{{ "%.1f%%" | format(s.positive_rate * 100) }}</td>
+                        <td>{{ "%.1f%%" | format(s.negative_rate * 100) }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="6" class="muted">尚無統計數據</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
 </body>
 </html>

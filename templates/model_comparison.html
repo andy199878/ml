@@ -3,68 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>模型性能比較 - 情感分析系統</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>模型比較</title>
     <style>
-        :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --success-color: #48bb78;
-            --error-color: #f56565;
-            --warning-color: #ed8936;
-            --info-color: #4299e1;
-            --dark-color: #2d3748;
-            --light-bg: #f7fafc;
-            --white: #ffffff;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --border-radius: 12px;
-        }
+        body { font-family: sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; background: #f6f8fa; }
+        nav { background: #ffffff; border: 1px solid #e5e7eb; padding: 0.5rem 0.75rem; border-radius: 8px; margin-bottom: 1rem; }
+        a { margin-right: 1rem; color: #2563eb; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+        th, td { border-bottom: 1px solid #e5e7eb; padding: 0.5rem 0.75rem; text-align: left; }
+        th { background: #f1f5f9; }
+        .muted { color: #555; }
+        .card { border: 1px solid #e5e7eb; background: #ffffff; padding: 0.75rem; border-radius: 8px; box-shadow: 0 1px 2px rgba(16,24,40,0.04); margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">首頁</a>
+        <a href="/ab_test">A/B測試</a>
+        <a href="/dashboard">儀表板</a>
+        <a href="/model_comparison" class="active">模型比較</a>
+    </nav>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <h1>模型比較</h1>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--light-bg);
-            color: var(--dark-color);
-            line-height: 1.6;
-        }
+    {% if error %}
+        <div class="card">錯誤：{{ error }}</div>
+    {% endif %}
 
-        .navbar {
-            background: var(--white);
-            box-shadow: var(--shadow);
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+    <div class="card">
+        <strong>最佳模型：</strong>
+        {% if performance_data and performance_data.best_model %}
+            {{ performance_data.best_model }}
+            <span class="muted">（訓練時間：{{ performance_data.training_date if performance_data.training_date else '-' }}）</span>
+        {% else %}
+            <span class="muted">尚無資料，請先執行訓練流程</span>
+        {% endif %}
+    </div>
 
-        .navbar .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
+    <h3>模型指標</h3>
+    {% if performance_data and performance_data.performances %}
+        <table>
+            <thead>
+                <tr>
+                    <th>模型</th>
+                    <th>Accuracy</th>
+                    <th>F1</th>
+                    <th>AUC</th>
+                    <th>Precision(+)</th>
+                    <th>Precision(-)</th>
+                    <th>Recall(+)</th>
+                    <th>Recall(-)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for name, m in performance_data.performances.items() %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ "%.3f"|format(m.accuracy) if m.accuracy is not none else '-' }}</td>
+                        <td>{{ "%.3f"|format(m.f1_score) if m.f1_score is not none else '-' }}</td>
+                        <td>{{ "%.3f"|format(m.auc_score) if m.auc_score is not none else '-' }}</td>
+                        <td>{{ "%.3f"|format(m.precision_pos) if m.precision_pos is not none else '-' }}</td>
+                        <td>{{ "%.3f"|format(m.precision_neg) if m.precision_neg is not none else '-' }}</td>
+                        <td>{{ "%.3f"|format(m.recall_pos) if m.recall_pos is not none else '-' }}</td>
+                        <td>{{ "%.3f"|format(m.recall_neg) if m.recall_neg is not none else '-' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="muted">尚無性能數據。</div>
+    {% endif %}
 
-        .navbar .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .navbar .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .navbar .nav-links a {
-            text-decoration: none;
-            color: var(--dark-color);
-            font-weight: 500;
+    <div class="muted" style="margin-top:1rem;">提示：訓練後會在 static/ 產生比較與混淆矩陣圖片。</div>
+</body>
+</html>
