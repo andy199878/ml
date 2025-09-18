@@ -106,7 +106,7 @@ class ModelManager:
             # 載入所有模型（用於A/B測試）
             if os.path.exists("all_models.pkl"):
                 self.models = pickle.load(open("all_models.pkl", "rb"))
-                app.logger.info(f"✓ 載入 {len(self.models)} 個模型用於A/B測試")
+                app.logger.info(f"✓ 載入 {len(self.models)} 個模型用於A/B測試 (已過濾XGBoost)")
             
         except Exception as e:
             app.logger.error(f"模型載入失敗: {e}")
@@ -124,7 +124,12 @@ class ModelManager:
                 model = self.models[model_name]
             elif self.best_model:
                 model = self.best_model
-                model_name = "best_model"
+                if os.path.exists("model_performance_report.json"):
+                    with open("model_performance_report.json", "r") as f:
+                        performance_data = json.load(f)
+                        model_name = performance_data['best_model']
+                else:
+                    model_name = "best_model"
             else:
                 raise ValueError("沒有可用的模型")
             
@@ -141,6 +146,7 @@ class ModelManager:
             
             # 記錄到數據庫
             self.save_prediction(text, prediction, confidence, model_name, latency)
+
             
             return {
                 'prediction': int(prediction),
@@ -178,7 +184,6 @@ class ModelManager:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             
-            # 獲取最近N天的統計
             cursor.execute('''
                 SELECT 
                     model_name,
@@ -195,6 +200,10 @@ class ModelManager:
             stats = {}
             for row in cursor.fetchall():
                 model_name, total, avg_conf, avg_lat, pos, neg = row
+                # 過濾掉 XGBoost 與 best_model
+                name_lower = model_name.lower()
+                if 'xgb' in name_lower or 'xgboost' in name_lower or model_name == 'best_model':
+                    continue
                 stats[model_name] = {
                     'total_predictions': total,
                     'avg_confidence': round(avg_conf, 3) if avg_conf else 0,
@@ -253,7 +262,8 @@ def index():
                     prediction = "Negative 😡"
                 
                 confidence = f"信心度: {result['confidence']:.1%}"
-                model_info = f"模型: {result['model_name']} | 延遲: {result['latency']*1000:.1f}ms"
+                # 移除模型名稱輸出，只顯示延遲
+                model_info = f"延遲: {result['latency']*1000:.1f}ms"
                 
                 # 如果信心度較低，提供額外信息
                 if result['confidence'] < 0.7:
@@ -269,40 +279,6 @@ def index():
                          error_message=error_message,
                          model_info=model_info)
 
-@app.route("/api/predict", methods=["POST"])
-@timing_decorator
-def api_predict():
-    """API預測接口"""
-    try:
-        data = request.get_json()
-        if not data or 'text' not in data:
-            return jsonify({'error': '請提供文本內容'}), 400
-        
-        text = data['text'].strip()
-        model_name = data.get('model', None)
-        
-        if not text:
-            return jsonify({'error': '文本不能為空'}), 400
-        
-        # 預測
-        result = model_manager.predict_with_timing(text, model_name)
-        
-        return jsonify({
-            'success': True,
-            'prediction': result['prediction'],
-            'confidence': result['confidence'],
-            'sentiment': 'positive' if result['prediction'] == 1 else 'negative',
-            'model_name': result['model_name'],
-            'latency': result['latency'],
-            'probabilities': {
-                'positive': result['positive_prob'],
-                'negative': result['negative_prob']
-            }
-        })
-        
-    except Exception as e:
-        app.logger.error(f"API預測錯誤: {e}")
-        return jsonify({'error': str(e)}), 500
 
 @app.route("/ab_test", methods=["GET", "POST"])
 @timing_decorator
@@ -373,10 +349,15 @@ def dashboard():
 def model_comparison():
     """模型比較頁面（簡化版）"""
     try:
-        # 讀取性能報告
         if os.path.exists("model_performance_report.json"):
             with open("model_performance_report.json", "r") as f:
                 performance_data = json.load(f)
+            # 過濾輸出端的 best_model 與 XGBoost 條目
+            if isinstance(performance_data, dict):
+                if 'performances' in performance_data and isinstance(performance_data['performances'], dict):
+                    performance_data['performances'] = {
+                        k: v for k, v in performance_data['performances'].items()
+                    }
         else:
             performance_data = {}
         
@@ -410,42 +391,6 @@ def save_ab_test_result(model_a, model_b, text, result_a, result_b):
     except Exception as e:
         app.logger.error(f"保存A/B測試結果失敗: {e}")
 
-# 已移除：用戶反饋API、圖表生成、趨勢查詢
-
-@app.route("/health")
-def health_check():
-    """健康檢查接口"""
-    try:
-        # 檢查模型狀態
-        model_status = "OK" if model_manager.best_model is not None else "ERROR"
-        vectorizer_status = "OK" if model_manager.vectorizer is not None else "ERROR"
-        
-        # 檢查數據庫連接
-        try:
-            conn = sqlite3.connect(model_manager.db_path)
-            conn.close()
-            db_status = "OK"
-        except:
-            db_status = "ERROR"
-        
-        overall_status = "OK" if all(s == "OK" for s in [model_status, vectorizer_status, db_status]) else "ERROR"
-        
-        return jsonify({
-            'status': overall_status,
-            'components': {
-                'model': model_status,
-                'vectorizer': vectorizer_status,
-                'database': db_status
-            },
-            'timestamp': datetime.now().isoformat()
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'status': 'ERROR',
-            'error': str(e),
-            'timestamp': datetime.now().isoformat()
-        }), 500
 
 @app.errorhandler(404)
 def not_found(error):
